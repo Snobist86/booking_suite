@@ -15,8 +15,6 @@ import java.util.List;
 //@WebServlet(value = "/main", name = "main")
 public class HomepageServlet extends HttpServlet {
 
-    private static final int ONE_WEEK = 1;
-
 //    private static List<String> SUITE_SIZES = SuiteSizeService.getInstance().findAllSuiteSizes();
 
     //    private static List<suiteCategory> SUITE_CATEGORIES = SuiteCategoryService.getInstance().findAllSuiteCategories();

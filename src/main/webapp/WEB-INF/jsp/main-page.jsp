@@ -18,6 +18,11 @@
         <button type="submit">Это только для админа</button>
     </form>
 </c:if>
+
+<form action="${pageContext.request.contextPath}/checkUsersPreviewOrder" method="get">
+    <button type="submit">Проверить статус Ваших заказов</button>
+</form>
+
 <form action="${pageContext.request.contextPath}/logout" method="get">
     <button type="submit">Выйти</button>
 </form>

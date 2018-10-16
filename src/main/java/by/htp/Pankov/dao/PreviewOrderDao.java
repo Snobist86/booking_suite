@@ -1,13 +1,14 @@
 package by.htp.Pankov.dao;
 
 import by.htp.Pankov.connection.ConnectionPool;
-import by.htp.Pankov.dto.previewOrder.SearchPreviewOrderDto;
+import by.htp.Pankov.dto.previewOrder.ChangeStatusPreviewOrderDto;
 import by.htp.Pankov.entity.OrderStatus;
 import by.htp.Pankov.entity.PreviewOrder;
 import by.htp.Pankov.entity.SuiteCategory;
 import by.htp.Pankov.entity.SuiteSize;
 import by.htp.Pankov.entity.User;
 import by.htp.Pankov.validator.LocalDateFormat;
+import by.htp.Pankov.validator.PastDateValidator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +31,13 @@ public final class PreviewOrderDao {
             "INTO hotel_booking.preview_order (user_id, suite_size_id, suite_category_id, " +
             "                                  check_in_date, check_out_date, booking_date, total_price, comment) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+    private static final String DELETE = "DELETE FROM hotel_booking.preview_order " +
+            "WHERE id = ?";
+
+    private static final String CHANGE_STATUS_ORDER = "UPDATE hotel_booking.preview_order" +
+            "  SET order_status_id = ? " +
+            "WHERE id = ?";
 
     private static final String SEARCH_PREVIEW_ORDER_BY_STATUS_ID = "SELECT" +
             "  po.id," +
@@ -56,7 +63,34 @@ public final class PreviewOrderDao {
             "  ON po.suite_size_id = ss.id" +
             "  INNER JOIN hotel_booking.suite_category sc" +
             "  ON po.suite_category_id = sc.id " +
-            "WHERE order_status_id = ?";
+            "WHERE order_status_id = ?" +
+            "ORDER BY po.id";
+
+    private static final String SEARCH_PREVIEW_ORDER_BY_USER_ID = "SELECT" +
+            "  po.id," +
+            "  po.user_id," +
+            "  u.login," +
+            "  po.suite_size_id," +
+            "  ss.name AS size_name," +
+            "  po.suite_category_id," +
+            "  sc.name AS category_name," +
+            "  po.order_status_id," +
+            "  os.title," +
+            "  po.check_in_date," +
+            "  po.check_out_date," +
+            "  po.booking_date," +
+            "  po.comment," +
+            "  po.total_price " +
+            "FROM hotel_booking.preview_order po" +
+            "  INNER JOIN hotel_booking.application_user u" +
+            "    ON po.user_id = u.id" +
+            "  INNER JOIN hotel_booking.order_status os" +
+            "    ON po.order_status_id = os.id" +
+            "  INNER JOIN hotel_booking.suite_size ss" +
+            "  ON po.suite_size_id = ss.id" +
+            "  INNER JOIN hotel_booking.suite_category sc" +
+            "  ON po.suite_category_id = sc.id " +
+            "WHERE user_id = ?";
 
     public void save(PreviewOrder previewOrder) {
         try (Connection connection = ConnectionPool.getConnection();
@@ -80,15 +114,105 @@ public final class PreviewOrderDao {
         }
     }
 
-    public List<PreviewOrder> findPreviewOrderByStatusOrderId(SearchPreviewOrderDto dto) {
+    public void delete(String previewOrderId) {
+        Connection connection = null;
+        PreparedStatement previewOrderStatement = null;
+        try {
+            connection = ConnectionPool.getConnection();
+            connection.setAutoCommit(false);
+
+            previewOrderStatement = connection.prepareStatement(DELETE);
+            previewOrderStatement.setLong(1, Long.valueOf(previewOrderId));
+            previewOrderStatement.executeUpdate();
+
+            connection.commit();
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (previewOrderStatement != null) {
+                    previewOrderStatement.close();
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public void changeStatus(ChangeStatusPreviewOrderDto dto) {
+        Connection connection = null;
+        PreparedStatement statusStatement = null;
+
+        try {
+            connection = ConnectionPool.getConnection();
+            statusStatement = connection.prepareStatement(CHANGE_STATUS_ORDER);
+            connection.setAutoCommit(false);
+
+            statusStatement.setLong(1, Long.valueOf(dto.getStatusId()));
+            statusStatement.setLong(2, Long.valueOf(dto.getPreviewOrderId()));
+            statusStatement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (statusStatement != null) {
+                    statusStatement.close();
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public List<PreviewOrder> findPreviewOrderByStatusOrderId(String previewOrderId) {
         List<PreviewOrder> previewOrders = new LinkedList<>();
         try (Connection connection = ConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SEARCH_PREVIEW_ORDER_BY_STATUS_ID)) {
-            preparedStatement.setObject(1, dto.getId(), Types.BIGINT);
+            preparedStatement.setObject(1, previewOrderId, Types.BIGINT);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 PreviewOrder previewOrder = getPreviewOrderFromResultSet(resultSet);
                 previewOrders.add(previewOrder);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return previewOrders;
+    }
+
+    public List<PreviewOrder> findPreviewOrderByUserId(User user) {
+        List<PreviewOrder> previewOrders = new LinkedList<>();
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SEARCH_PREVIEW_ORDER_BY_USER_ID)) {
+            preparedStatement.setObject(1, user.getId(), Types.BIGINT);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                PreviewOrder previewOrder = getPreviewOrderFromResultSet(resultSet);
+                if (PastDateValidator.validate(previewOrder.getCheckIn())) {
+                    previewOrders.add(previewOrder);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

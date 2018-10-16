@@ -1,6 +1,7 @@
 package by.htp.Pankov.servlet.previewOrder;
 
 import by.htp.Pankov.dto.previewOrder.AddPreviewOrderDto;
+import by.htp.Pankov.dto.user.UserDto;
 import by.htp.Pankov.entity.User;
 import by.htp.Pankov.service.PreviewOrderService;
 import by.htp.Pankov.util.JspPath;
@@ -17,7 +18,7 @@ public class AddPreviewOrderServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User currentUser = (User) req.getSession().getAttribute("currentUser");
+        UserDto currentUser = (UserDto) req.getSession().getAttribute("currentUser");
         AddPreviewOrderDto addPreviewOrderDto = AddPreviewOrderDto.builder()
                 .userId(String.valueOf(currentUser.getId()))
                 .suiteSizeId(req.getParameter("suiteSizeId"))

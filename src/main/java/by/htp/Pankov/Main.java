@@ -20,7 +20,7 @@ public class Main {
 //                .checkOutDate("2018-10-20")
 //                .build();
 //
-//        return SuiteDao.getInstance().findVacantSuites(dto).stream()
+//        return SuiteDao.getInstance().searchVacantSuites(dto).stream()
 //                .map(it -> new FindSuiteDto(Long.valueOf(it.getSuiteSize().getId()),
 //                        Long.valueOf(it.getSuiteCategory().getId()),
 //                        Integer.valueOf(it.getPrice())))

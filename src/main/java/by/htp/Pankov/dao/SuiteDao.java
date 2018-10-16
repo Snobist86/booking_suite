@@ -15,8 +15,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -29,6 +30,8 @@ public final class SuiteDao {
             "VALUES (?, ?, ?, ?, ?)";
 
     private static final String SEARCH_VACANT_SUITE = "SELECT" +
+            "  s.id," +
+            "  s.number," +
             "  s.suite_size_id," +
             "  sz.name AS size_name," +
             "  sz.comment AS size_comment," +
@@ -67,7 +70,7 @@ public final class SuiteDao {
             "  ON sz.id = s.suite_size_id" +
             "  INNER JOIN hotel_booking.suite_category c" +
             "  ON c.id = s.suite_category_id " +
-            "WHERE number = ?;";
+            "WHERE number = ?";
 
     public void save(Suite suite) {
         try (Connection connection = ConnectionPool.getConnection();
@@ -88,7 +91,7 @@ public final class SuiteDao {
         }
     }
 
-    public Set<Suite> findVacantSuites(VacantSuiteSearchDto vacantSuiteSearchDto) {
+    public Set<Suite> searchVacantSuites(VacantSuiteSearchDto vacantSuiteSearchDto) {
         Set<Suite> vacantSuites = new HashSet<>();
 
         try (Connection connection = ConnectionPool.getConnection();
@@ -117,22 +120,51 @@ public final class SuiteDao {
         return vacantSuites;
     }
 
-    public Optional<Suite> findByNumber(Integer number) {
-        Optional<Suite> suite = Optional.empty();
-        try (Connection connection = ConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_SUITE_BY_NUMBER)) {
-            preparedStatement.setLong(1, number);
+    public List<Suite> searchSuitesForOrder(VacantSuiteSearchDto vacantSuiteSearchDto) {
+        List<Suite> vacantSuites = new ArrayList<>();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                suite = Optional.of(getSuite(resultSet));
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SEARCH_VACANT_SUITE)) {
+
+            preparedStatement.setObject(1, vacantSuiteSearchDto.getSuiteSizeId(), Types.BIGINT);
+            preparedStatement.setObject(2, vacantSuiteSearchDto.getSuiteSizeId(), Types.BIGINT);
+            preparedStatement.setObject(3, vacantSuiteSearchDto.getSuiteCategoryId(), Types.BIGINT);
+            preparedStatement.setObject(4, vacantSuiteSearchDto.getSuiteCategoryId(), Types.BIGINT);
+            preparedStatement.setDate(5, Date.valueOf(vacantSuiteSearchDto.getCheckInDate()));
+            preparedStatement.setDate(6, Date.valueOf(vacantSuiteSearchDto.getCheckOutDate()));
+            preparedStatement.setDate(7, Date.valueOf(vacantSuiteSearchDto.getCheckInDate()));
+            preparedStatement.setDate(8, Date.valueOf(vacantSuiteSearchDto.getCheckOutDate()));
+            preparedStatement.executeQuery();
+
+            ResultSet resultSet = preparedStatement.getResultSet();
+            while (resultSet.next()) {
+                Suite suite = getSuiteForOrder(resultSet);
+                vacantSuites.add(suite);
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return suite;
+        return vacantSuites;
     }
+
+//    public Optional<Suite> findByNumber(Integer number) {
+//        Optional<Suite> suite = Optional.empty();
+//        try (Connection connection = ConnectionPool.getConnection();
+//             PreparedStatement preparedStatement = connection.prepareStatement(FIND_SUITE_BY_NUMBER)) {
+//            preparedStatement.setLong(1, number);
+//
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            if (resultSet.next()) {
+//                suite = Optional.of(getSuite(resultSet));
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return suite;
+//    }
 
     private Suite getSuiteForSearch(ResultSet resultSet) throws SQLException {
         return Suite.builder()
@@ -150,24 +182,32 @@ public final class SuiteDao {
                 .build();
     }
 
-    private Suite getSuite(ResultSet resultSet) throws SQLException {
+    private Suite getSuiteForOrder(ResultSet resultSet) throws SQLException {
         return Suite.builder()
                 .id(resultSet.getLong("id"))
                 .number(resultSet.getInt("number"))
-                .suiteSize(SuiteSize.builder()
-                        .id(resultSet.getLong("suite_size_id"))
-                        .name(resultSet.getString("size_name"))
-                        .comment(resultSet.getString("size_comment"))
-                        .build())
-                .suiteCategory(SuiteCategory.builder()
-                        .id(resultSet.getLong("suite_category_id"))
-                        .name(resultSet.getString("category_name"))
-                        .comment(resultSet.getString("category_comment"))
-                        .build())
-                .price(resultSet.getInt("price"))
-                .floor(resultSet.getInt("floor"))
                 .build();
     }
+
+
+//    private Suite getSuite(ResultSet resultSet) throws SQLException {
+//        return Suite.builder()
+//                .id(resultSet.getLong("id"))
+//                .number(resultSet.getInt("number"))
+//                .suiteSize(SuiteSize.builder()
+//                        .id(resultSet.getLong("suite_size_id"))
+//                        .name(resultSet.getString("size_name"))
+//                        .comment(resultSet.getString("size_comment"))
+//                        .build())
+//                .suiteCategory(SuiteCategory.builder()
+//                        .id(resultSet.getLong("suite_category_id"))
+//                        .name(resultSet.getString("category_name"))
+//                        .comment(resultSet.getString("category_comment"))
+//                        .build())
+//                .price(resultSet.getInt("price"))
+//                .floor(resultSet.getInt("floor"))
+//                .build();
+//    }
 
     public static SuiteDao getInstance() {
         return INSTANCE;

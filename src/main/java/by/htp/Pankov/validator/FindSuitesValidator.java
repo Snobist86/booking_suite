@@ -11,11 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FindSuitesValidator implements Validator<VacantSuiteSearchDto> {
+public class FindSuitesValidator {
 
     private static FindSuitesValidator INSTANCE = new FindSuitesValidator();
 
-    @Override
     public List<String> validate(VacantSuiteSearchDto dto) {
         List<String> errors = new ArrayList<>();
 

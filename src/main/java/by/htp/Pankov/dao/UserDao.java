@@ -135,14 +135,14 @@ public final class UserDao {
 
     public void delete(Long id) {
         Connection connection = null;
-        PreparedStatement countryStatement = null;
+        PreparedStatement userStatement = null;
         try {
             connection = ConnectionPool.getConnection();
             connection.setAutoCommit(false);
 
-            countryStatement = connection.prepareStatement(DELETE);
-            countryStatement.setLong(1, id);
-            countryStatement.executeUpdate();
+            userStatement = connection.prepareStatement(DELETE);
+            userStatement.setLong(1, id);
+            userStatement.executeUpdate();
 
             connection.commit();
         } catch (SQLException e) {
@@ -159,8 +159,8 @@ public final class UserDao {
                 if (connection != null) {
                     connection.close();
                 }
-                if (countryStatement != null) {
-                    countryStatement.close();
+                if (userStatement != null) {
+                    userStatement.close();
                 }
             } catch (SQLException e1) {
                 e1.printStackTrace();

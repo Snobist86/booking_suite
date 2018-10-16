@@ -81,8 +81,8 @@ CREATE TABLE hotel_suite_booking.request (
 
 DROP TABLE hotel_booking.order;
 
-DELETE FROM hotel_booking.preview_order
-WHERE id = 1;
+DELETE FROM hotel_booking.order
+WHERE preview_order_id = ?;
 
 ALTER TABLE hotel_booking.order_status
   ALTER COLUMN title TYPE CHARACTER VARYING(64);
@@ -100,6 +100,7 @@ ALTER TABLE hotel_booking.order
   RENAME COLUMN finish_date TO check_out_date;
 
 --------------------------------------------
+INSERT INTO hotel_booking.order (suite_id, preview_order_id) VALUES (?, ?);
 
 INSERT INTO hotel_booking.order_status (title) VALUES
   ('Забронировано. Ожидание обработки.'),
@@ -107,7 +108,8 @@ INSERT INTO hotel_booking.order_status (title) VALUES
   ('Забронировано и оплачено.'),
   ('Отменено. Ожидание возврата оплаты.'),
   ('Отменено. Оплата возвращена.'),
-  ('Отказано в регистрации.');
+  ('Отказано в регистрации.'),
+  ('Отменено клиентом.');
 
 INSERT INTO hotel_booking.suite_size (name, max_capacity, comment) VALUES
   ('одноместный', 1, 'Номер для одного человека.'),
@@ -161,16 +163,20 @@ INSERT INTO hotel_booking.suite (number, suite_size_id, suite_category_id, price
   (26, 2, 15, 750, 3);
 
 --------------------------------------------
+UPDATE hotel_booking.preview_order
+SET order_status_id = ?
+WHERE id = ?;
+
 
 UPDATE hotel_booking.order_status
 SET title = 'Забронировано и оплачено.'
 WHERE id = 3;
 
 SELECT *
-FROM hotel_booking.order_status;
+FROM hotel_booking.preview_order;
 
 SELECT *
-FROM hotel_booking.preview_order;
+FROM hotel_booking.order_status;
 
 SELECT
   st.id,
@@ -203,7 +209,6 @@ FROM hotel_booking.suite s
     ON c.id = s.suite_category_id
 WHERE number = ?;
 
-
 SELECT
   s.suite_size_id,
   sz.name    AS size_name,
@@ -218,6 +223,22 @@ FROM hotel_booking.suite s
   INNER JOIN hotel_booking.suite_category c
     ON s.suite_category_id = c.id
 WHERE (? IS NULL OR s.suite_size_id = ?) AND (? IS NULL OR s.suite_category_id = ?)
+      AND (s.id NOT IN (SELECT o.suite_id
+                        FROM hotel_booking.order o
+                          INNER JOIN hotel_booking.preview_order po
+                            ON po.id = o.preview_order_id
+                        WHERE po.check_in_date BETWEEN ? AND ?))
+      AND (s.id NOT IN (SELECT o.suite_id
+                        FROM hotel_booking.order o
+                          INNER JOIN hotel_booking.preview_order po
+                            ON po.id = o.preview_order_id
+                        WHERE po.check_out_date BETWEEN ? AND ?));
+
+SELECT
+  s.id,
+  s.number
+FROM hotel_booking.suite s
+WHERE s.suite_size_id = ? AND s.suite_size_id = ?
       AND (s.id NOT IN (SELECT o.suite_id
                         FROM hotel_booking.order o
                           INNER JOIN hotel_booking.preview_order po
@@ -253,16 +274,6 @@ WHERE s.suite_size_id = 2 AND s.suite_category_id = 14
                             ON po.id = o.preview_order_id
                         WHERE po.check_out_date BETWEEN '2018-10-14' AND '2018-10-18'));
 
-SELECT o.suite_id
-FROM hotel_booking.order o
-  INNER JOIN hotel_booking.order_status os
-    ON os.id = o.order_status_id
-WHERE (o.check_in_date NOT BETWEEN '2018-10-20' AND '2018-10-21');
-
-SELECT o.suite_id
-FROM hotel_booking.order o
-WHERE (o.order_status_id = 3) OR (o.check_out_date NOT BETWEEN '2018-10-16' AND '2018-10-18');
-
 INSERT
 INTO hotel_booking.preview_order (user_id, suite_size_id, suite_category_id,
                                   check_in_date, check_out_date, booking_date, total_price, comment)
@@ -289,7 +300,8 @@ FROM hotel_booking.preview_order po
   INNER JOIN hotel_booking.order_status os
     ON po.order_status_id = os.id
   INNER JOIN hotel_booking.suite_size ss
-  ON po.suite_size_id = ss.id
+    ON po.suite_size_id = ss.id
   INNER JOIN hotel_booking.suite_category sc
-  ON po.suite_category_id = sc.id
-WHERE order_status_id = 1;
+    ON po.suite_category_id = sc.id
+WHERE user_id = 1
+ORDER BY po.id;

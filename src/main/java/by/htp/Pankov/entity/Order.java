@@ -14,6 +14,6 @@ import java.time.LocalDate;
 public class Order {
 
     private Long id;
-    private Long suiteId;
-    private Long previewOrderId;
+    private Suite suite;
+    private PreviewOrder previewOrder;
 }

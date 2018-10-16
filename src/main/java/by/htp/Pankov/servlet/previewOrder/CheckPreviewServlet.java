@@ -27,16 +27,13 @@ public class CheckPreviewServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        SearchPreviewOrderDto dto = SearchPreviewOrderDto.builder()
-                .id(req.getParameter("id"))
-                .build();
+        String previewOrderId = req.getParameter("id");
 
-        List<FindPreviewOrderDto> previewOrders = PreviewOrderService.getInstance().search(dto);
+        List<FindPreviewOrderDto> previewOrders = PreviewOrderService.getInstance().search(previewOrderId);
 
         req.setAttribute("previewOrders", previewOrders);
-        req.setAttribute("status", dto);
 
-        getServletContext().getRequestDispatcher(JspPath.get("administration-of-orders")).forward(req, resp);
+        resp.sendRedirect(req.getHeader("Referer"));
     }
 
 }

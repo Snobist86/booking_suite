@@ -2,8 +2,11 @@ package by.htp.Pankov.service;
 
 import by.htp.Pankov.dao.PreviewOrderDao;
 import by.htp.Pankov.dto.previewOrder.AddPreviewOrderDto;
+import by.htp.Pankov.dto.previewOrder.ChangeStatusPreviewOrderDto;
 import by.htp.Pankov.dto.previewOrder.FindPreviewOrderDto;
 import by.htp.Pankov.dto.previewOrder.SearchPreviewOrderDto;
+import by.htp.Pankov.dto.user.UserDto;
+import by.htp.Pankov.entity.OrderStatus;
 import by.htp.Pankov.entity.PreviewOrder;
 import by.htp.Pankov.entity.SuiteCategory;
 import by.htp.Pankov.entity.SuiteSize;
@@ -22,23 +25,8 @@ public final class PreviewOrderService {
 
     private static final PreviewOrderService INSTANCE = new PreviewOrderService();
 
-    public List<FindPreviewOrderDto> search(SearchPreviewOrderDto dto) {
-        return PreviewOrderDao.getInstance().findPreviewOrderByStatusOrderId(dto).stream()
-                .map(it -> new FindPreviewOrderDto(String.valueOf(it.getId()),
-                        String.valueOf(it.getUser().getId()),
-                        String.valueOf(it.getUser().getLogin()),
-                        String.valueOf(it.getSuiteSize().getId()),
-                        String.valueOf(it.getSuiteSize().getName()),
-                        String.valueOf(it.getSuiteCategory().getId()),
-                        String.valueOf(it.getSuiteCategory().getName()),
-                        String.valueOf(it.getOrderStatus().getId()),
-                        String.valueOf(it.getOrderStatus().getTitle()),
-                        String.valueOf(it.getCheckIn()),
-                        String.valueOf(it.getCheckOut()),
-                        String.valueOf(it.getBookingDate()),
-                        String.valueOf(it.getTotalPrice()),
-                        String.valueOf(it.getComment())))
-                .collect(Collectors.toList());
+    public void changeStatus (ChangeStatusPreviewOrderDto dto){
+        PreviewOrderDao.getInstance().changeStatus(dto);
     }
 
     public void save(AddPreviewOrderDto addPreviewOrderDto) {
@@ -59,6 +47,48 @@ public final class PreviewOrderService {
                         .totalPrice(getTotalPrice(addPreviewOrderDto))
                         .comment(addPreviewOrderDto.getComment())
                         .build());
+    }
+
+    public void delete (String previewOrderId){
+        PreviewOrderDao.getInstance().delete(previewOrderId);
+    }
+
+    public List<FindPreviewOrderDto> search(String previewOrderId) {
+        return PreviewOrderDao.getInstance().findPreviewOrderByStatusOrderId(previewOrderId).stream()
+                .map(it -> new FindPreviewOrderDto(String.valueOf(it.getId()),
+                        String.valueOf(it.getUser().getId()),
+                        String.valueOf(it.getUser().getLogin()),
+                        String.valueOf(it.getSuiteSize().getId()),
+                        String.valueOf(it.getSuiteSize().getName()),
+                        String.valueOf(it.getSuiteCategory().getId()),
+                        String.valueOf(it.getSuiteCategory().getName()),
+                        String.valueOf(it.getOrderStatus().getId()),
+                        String.valueOf(it.getOrderStatus().getTitle()),
+                        String.valueOf(it.getCheckIn()),
+                        String.valueOf(it.getCheckOut()),
+                        String.valueOf(it.getBookingDate()),
+                        String.valueOf(it.getTotalPrice()),
+                        String.valueOf(it.getComment())))
+                .collect(Collectors.toList());
+    }
+
+    public List<FindPreviewOrderDto> findAllPreviewOrderOfUser(User user) {
+        return PreviewOrderDao.getInstance().findPreviewOrderByUserId(user).stream()
+                .map(it -> new FindPreviewOrderDto(String.valueOf(it.getId()),
+                        String.valueOf(it.getUser().getId()),
+                        String.valueOf(it.getUser().getLogin()),
+                        String.valueOf(it.getSuiteSize().getId()),
+                        String.valueOf(it.getSuiteSize().getName()),
+                        String.valueOf(it.getSuiteCategory().getId()),
+                        String.valueOf(it.getSuiteCategory().getName()),
+                        String.valueOf(it.getOrderStatus().getId()),
+                        String.valueOf(it.getOrderStatus().getTitle()),
+                        String.valueOf(it.getCheckIn()),
+                        String.valueOf(it.getCheckOut()),
+                        String.valueOf(it.getBookingDate()),
+                        String.valueOf(it.getTotalPrice()),
+                        String.valueOf(it.getComment())))
+                .collect(Collectors.toList());
     }
 
     private int getTotalPrice(AddPreviewOrderDto addPreviewOrderDto) {

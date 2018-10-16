@@ -15,5 +15,4 @@ public class VacantSuiteSearchDto {
     private String suiteCategoryId;
     private String checkInDate;
     private String checkOutDate;
-
 }
