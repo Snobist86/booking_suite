@@ -5,6 +5,7 @@ import by.htp.Pankov.dto.previewOrder.SearchPreviewOrderDto;
 import by.htp.Pankov.service.OrderStatusService;
 import by.htp.Pankov.service.PreviewOrderService;
 import by.htp.Pankov.util.JspPath;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +17,8 @@ import java.util.List;
 
 @WebServlet(value = "/checkPreviewOrder", name = "checkPreviewOrder")
 public class CheckPreviewServlet extends HttpServlet {
+
+    private static final Logger log = Logger.getLogger(CheckPreviewServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,6 +35,7 @@ public class CheckPreviewServlet extends HttpServlet {
         List<FindPreviewOrderDto> previewOrders = PreviewOrderService.getInstance().search(previewOrderId);
 
         req.setAttribute("previewOrders", previewOrders);
+        log.info("search of the pre-order ");
 
         resp.sendRedirect(req.getHeader("Referer"));
     }

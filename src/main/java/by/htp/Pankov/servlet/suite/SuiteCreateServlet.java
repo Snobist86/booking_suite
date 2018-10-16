@@ -5,6 +5,7 @@ import by.htp.Pankov.service.SuiteCategoryService;
 import by.htp.Pankov.service.SuiteService;
 import by.htp.Pankov.service.SuiteSizeService;
 import by.htp.Pankov.util.JspPath;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,6 +17,8 @@ import java.io.IOException;
 @WebServlet(value = "/createSuite", name = "createSuite")
 public class SuiteCreateServlet extends HttpServlet{
 
+    private static final Logger log = Logger.getLogger(SuiteCreateServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("sizes", SuiteSizeService.getInstance().findAll());
@@ -23,6 +26,7 @@ public class SuiteCreateServlet extends HttpServlet{
         getServletContext()
                 .getRequestDispatcher(JspPath.get("create-suite"))
                 .forward(req, resp);
+        log.info("Go to page of suite's create ");
     }
 
     @Override
@@ -36,6 +40,7 @@ public class SuiteCreateServlet extends HttpServlet{
                 .build();
 
         SuiteService.getInstance().save(suiteCreateDto);
+        log.info("Create the suite ");
 
         resp.sendRedirect("/createSuite");
     }

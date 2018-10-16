@@ -5,6 +5,7 @@ import by.htp.Pankov.dto.user.UserDto;
 import by.htp.Pankov.entity.User;
 import by.htp.Pankov.service.PreviewOrderService;
 import by.htp.Pankov.util.JspPath;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +16,8 @@ import java.io.IOException;
 
 @WebServlet(value = "/addPreviewOrder", name = "addPreviewOrder")
 public class AddPreviewOrderServlet extends HttpServlet {
+
+    private static final Logger log = Logger.getLogger(AddPreviewOrderServlet.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -30,6 +33,7 @@ public class AddPreviewOrderServlet extends HttpServlet {
                 .build();
 
         PreviewOrderService.getInstance().save(addPreviewOrderDto);
+        log.info("create of the pre-order ");
 
         getServletContext().getRequestDispatcher(JspPath.get("successfully-order")).forward(req, resp);
     }

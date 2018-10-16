@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PreviewOrderService {
 
+    public static int countApartmentOnPage=5;
+
     private static final PreviewOrderService INSTANCE = new PreviewOrderService();
 
     public void changeStatus (ChangeStatusPreviewOrderDto dto){

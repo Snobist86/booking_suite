@@ -8,6 +8,7 @@ import by.htp.Pankov.service.SuiteSizeService;
 import by.htp.Pankov.util.JspPath;
 import by.htp.Pankov.util.StringUtil;
 import by.htp.Pankov.validator.FindSuitesValidator;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +22,8 @@ import java.util.Set;
 @WebServlet(value = "/searchSuite", name = "searchSuite")
 public class SearchSuiteServlet extends HttpServlet {
 
+    private static final Logger log = Logger.getLogger(SearchSuiteServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("sizes", SuiteSizeService.getInstance().findAll());
@@ -28,6 +31,7 @@ public class SearchSuiteServlet extends HttpServlet {
         getServletContext()
                 .getRequestDispatcher(JspPath.get("search-suite"))
                 .forward(req, resp);
+        log.info("Go to page of suite's search ");
     }
 
     @Override
@@ -44,8 +48,10 @@ public class SearchSuiteServlet extends HttpServlet {
         if (validationResult.isEmpty()) {
             Set<FindSuiteDto> vacantSuites = SuiteService.getInstance().search(vacantSuiteSearchDto);
             req.setAttribute("vacantSuites", vacantSuites);
+            log.info("Search of suites ");
         } else {
             req.setAttribute("errors", validationResult);
+            log.error("uncorrected search ");
         }
         getServletContext().getRequestDispatcher(JspPath.get("search-suite")).forward(req, resp);
     }
