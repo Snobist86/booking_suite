@@ -18,9 +18,10 @@ CREATE TABLE application_user (
 );
 
 CREATE TABLE hotel_booking.suite_size (
-  id      BIGSERIAL PRIMARY KEY,
-  name    CHARACTER VARYING(32),
-  comment CHARACTER VARYING(512)
+  id           BIGSERIAL PRIMARY KEY,
+  name         CHARACTER VARYING(32),
+  comment      CHARACTER VARYING(512),
+  max_capacity INTEGER
 );
 
 CREATE TABLE hotel_booking.suite_category (
@@ -69,36 +70,6 @@ CREATE TABLE hotel_booking.preview_order (
   comment           CHARACTER VARYING(256)
 );
 
-CREATE TABLE hotel_suite_booking.request (
-  id             BIGSERIAL PRIMARY KEY,
-  size_id        BIGINT NOT NULL REFERENCES hotel_booking.suite_size (id),
-  category_id    BIGINT NOT NULL REFERENCES hotel_booking.suite_category (id),
-  check_in_date  DATE,
-  check_out_date DATE,
-  book_date      DATE,
-  UNIQUE (suite_id, date)
-);
-
-DROP TABLE hotel_booking.order;
-
-DELETE FROM hotel_booking.order
-WHERE preview_order_id = ?;
-
-ALTER TABLE hotel_booking.order_status
-  ALTER COLUMN title TYPE CHARACTER VARYING(64);
-
-ALTER TABLE hotel_booking.suite
-  ADD CONSTRAINT some_name UNIQUE (id);
-
-ALTER TABLE hotel_booking.preview_order
-  ADD COLUMN total_price INTEGER;
-
-ALTER TABLE hotel_booking.order
-  DROP COLUMN user_id;
-
-ALTER TABLE hotel_booking.order
-  RENAME COLUMN finish_date TO check_out_date;
-
 --------------------------------------------
 INSERT INTO hotel_booking.order (suite_id, preview_order_id) VALUES (?, ?);
 
@@ -130,178 +101,35 @@ INSERT INTO hotel_booking.suite_category (name, comment) VALUES
                 'Бронируется минимум за 3 дня до прибытия. Указанная цена - минимальна и может быть изменена' ||
                 'в зависимости от выбранного интерьра.');
 
-INSERT INTO hotel_booking.order (user_id, suite_id, order_status_id, check_in_date,
-                                 check_out_date, booking_date, comment) VALUES
-  (1, 26, 3, '15-10-2018', '18-10-2018', '6-10-2018', 'sfs\ag\g');
-
 INSERT INTO hotel_booking.suite (number, suite_size_id, suite_category_id, price, floor) VALUES
-  (1, 2, 14, 300, 1),
-  (2, 2, 14, 300, 1),
-  (3, 2, 14, 300, 1),
-  (4, 2, 14, 300, 1),
-  (5, 2, 13, 150, 1),
-  (6, 2, 13, 150, 1),
-  (7, 2, 14, 300, 2),
-  (8, 2, 14, 300, 2),
-  (9, 2, 13, 150, 2),
-  (10, 2, 13, 150, 2),
-  (11, 2, 13, 150, 2),
-  (12, 2, 13, 150, 2),
-  (13, 2, 13, 150, 2),
-  (14, 2, 14, 300, 2),
-  (15, 2, 14, 300, 2),
-  (16, 2, 14, 300, 2),
-  (17, 2, 14, 300, 2),
-  (18, 2, 14, 300, 2),
-  (19, 2, 13, 150, 2),
-  (20, 2, 13, 150, 2),
-  (21, 4, 13, 450, 3),
-  (22, 4, 13, 450, 3),
-  (23, 3, 13, 300, 3),
-  (24, 4, 13, 450, 3),
-  (25, 2, 15, 750, 3),
-  (26, 2, 15, 750, 3);
+  (1, 2, 2, 300, 1),
+  (2, 2, 2, 300, 1),
+  (3, 2, 2, 300, 1),
+  (4, 2, 2, 300, 1),
+  (5, 2, 1, 150, 1),
+  (6, 2, 1, 150, 1),
+  (7, 2, 2, 300, 2),
+  (8, 2, 2, 300, 2),
+  (9, 2, 1, 150, 2),
+  (10, 2, 1, 150, 2),
+  (11, 2, 1, 150, 2),
+  (12, 2, 1, 150, 2),
+  (13, 2, 1, 150, 2),
+  (14, 2, 2, 300, 2),
+  (15, 2, 2, 300, 2),
+  (16, 2, 2, 300, 2),
+  (17, 2, 2, 300, 2),
+  (18, 2, 2, 300, 2),
+  (19, 2, 1, 150, 2),
+  (20, 2, 1, 150, 2),
+  (21, 4, 1, 450, 3),
+  (22, 4, 1, 450, 3),
+  (23, 3, 1, 300, 3),
+  (24, 4, 1, 450, 3),
+  (25, 2, 3, 750, 3),
+  (26, 2, 3, 750, 3);
 
 --------------------------------------------
-UPDATE hotel_booking.preview_order
-SET order_status_id = ?
-WHERE id = ?;
-
-
-UPDATE hotel_booking.order_status
-SET title = 'Забронировано и оплачено.'
-WHERE id = 3;
 
 SELECT *
-FROM hotel_booking.preview_order;
-
-SELECT *
-FROM hotel_booking.order_status;
-
-SELECT
-  st.id,
-  st.suite_size_id,
-  s.name,
-  s.max_capacity,
-  st.suite_category_id,
-  c.name,
-  st.price,
-  st.floor
-FROM hotel_booking.suite st
-  INNER JOIN hotel_booking.suite_size s
-    ON st.suite_size_id = s.id
-  INNER JOIN hotel_booking.suite_category c
-    ON st.suite_category_id = c.id;
-
-SELECT
-  s.id,
-  s.number,
-  s.suite_size_id,
-  sz.name AS size_name,
-  s.suite_category_id,
-  c.name  AS category_name,
-  s.price,
-  s.floor
-FROM hotel_booking.suite s
-  INNER JOIN hotel_booking.suite_size sz
-    ON sz.id = s.suite_size_id
-  INNER JOIN hotel_booking.suite_category c
-    ON c.id = s.suite_category_id
-WHERE number = ?;
-
-SELECT
-  s.suite_size_id,
-  sz.name    AS size_name,
-  sz.comment AS size_comment,
-  s.suite_category_id,
-  c.name     AS category_name,
-  c.comment  AS category_comment,
-  s.price
-FROM hotel_booking.suite s
-  INNER JOIN hotel_booking.suite_size sz
-    ON s.suite_size_id = sz.id
-  INNER JOIN hotel_booking.suite_category c
-    ON s.suite_category_id = c.id
-WHERE (? IS NULL OR s.suite_size_id = ?) AND (? IS NULL OR s.suite_category_id = ?)
-      AND (s.id NOT IN (SELECT o.suite_id
-                        FROM hotel_booking.order o
-                          INNER JOIN hotel_booking.preview_order po
-                            ON po.id = o.preview_order_id
-                        WHERE po.check_in_date BETWEEN ? AND ?))
-      AND (s.id NOT IN (SELECT o.suite_id
-                        FROM hotel_booking.order o
-                          INNER JOIN hotel_booking.preview_order po
-                            ON po.id = o.preview_order_id
-                        WHERE po.check_out_date BETWEEN ? AND ?));
-
-SELECT
-  s.id,
-  s.number
-FROM hotel_booking.suite s
-WHERE s.suite_size_id = ? AND s.suite_size_id = ?
-      AND (s.id NOT IN (SELECT o.suite_id
-                        FROM hotel_booking.order o
-                          INNER JOIN hotel_booking.preview_order po
-                            ON po.id = o.preview_order_id
-                        WHERE po.check_in_date BETWEEN ? AND ?))
-      AND (s.id NOT IN (SELECT o.suite_id
-                        FROM hotel_booking.order o
-                          INNER JOIN hotel_booking.preview_order po
-                            ON po.id = o.preview_order_id
-                        WHERE po.check_out_date BETWEEN ? AND ?));
-
-SELECT
-  s.id,
-  s.suite_size_id,
-  sz.name,
-  s.suite_category_id,
-  c.name,
-  s.price
-FROM hotel_booking.suite s
-  INNER JOIN hotel_booking.suite_size sz
-    ON s.suite_size_id = sz.id
-  INNER JOIN hotel_booking.suite_category c
-    ON s.suite_category_id = c.id
-WHERE s.suite_size_id = 2 AND s.suite_category_id = 14
-      AND (s.id NOT IN (SELECT o.suite_id
-                        FROM hotel_booking.order o
-                          INNER JOIN hotel_booking.preview_order po
-                            ON po.id = o.preview_order_id
-                        WHERE po.check_in_date BETWEEN '2018-10-14' AND '2018-10-18'))
-      AND (s.id NOT IN (SELECT o.suite_id
-                        FROM hotel_booking.order o
-                          INNER JOIN hotel_booking.preview_order po
-                            ON po.id = o.preview_order_id
-                        WHERE po.check_out_date BETWEEN '2018-10-14' AND '2018-10-18'));
-
-INSERT
-INTO hotel_booking.preview_order (user_id, suite_size_id, suite_category_id,
-                                  check_in_date, check_out_date, booking_date, total_price, comment)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-
-SELECT
-  po.id,
-  po.user_id,
-  u.login,
-  po.suite_size_id,
-  ss.name AS size_name,
-  po.suite_category_id,
-  sc.name AS category_name,
-  po.order_status_id,
-  os.title,
-  po.check_in_date,
-  po.check_out_date,
-  po.booking_date,
-  po.comment,
-  po.total_price
-FROM hotel_booking.preview_order po
-  INNER JOIN hotel_booking.application_user u
-    ON po.user_id = u.id
-  INNER JOIN hotel_booking.order_status os
-    ON po.order_status_id = os.id
-  INNER JOIN hotel_booking.suite_size ss
-    ON po.suite_size_id = ss.id
-  INNER JOIN hotel_booking.suite_category sc
-    ON po.suite_category_id = sc.id
-WHERE user_id = 1
-ORDER BY po.id;
+FROM hotel_booking.order;

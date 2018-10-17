@@ -55,13 +55,8 @@ public final class SuiteSizeDao {
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(FIND_ALL);
             while (resultSet.next()) {
-                SuiteSize suiteSize = SuiteSize.builder()
-                        .id(resultSet.getLong("id"))
-                        .name(resultSet.getString("name"))
-                        .comment(resultSet.getString("comment"))
-                        .maxCapacity(resultSet.getInt("max_capacity"))
-                        .build();
-                sizes.add(suiteSize);
+                SuiteSize size = getSizeFromResultSet(resultSet);
+                sizes.add(size);
             }
         } catch (SQLException e) {
             e.printStackTrace();

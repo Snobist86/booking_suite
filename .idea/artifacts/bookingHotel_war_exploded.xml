@@ -10,6 +10,7 @@
           <element id="library" level="project" name="Maven: javax.servlet:jstl:1.2" />
           <element id="library" level="project" name="Maven: org.projectlombok:lombok:1.16.16" />
           <element id="library" level="project" name="Maven: org.postgresql:postgresql:42.2.1" />
+          <element id="library" level="project" name="Maven: javax.servlet:javax.servlet-api:3.1.0" />
           <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-jdbc:9.0.6" />
           <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-juli:9.0.6" />
           <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:3.1.2.RELEASE" />

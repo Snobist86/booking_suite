@@ -26,38 +26,66 @@
 
 <c:forEach var="previewOrder" items="${requestScope.previewOrders}">
     <c:if test="${previewOrder.orderStatusId eq '1'}">
-        <form action="${pageContext.request.contextPath}/createOrder" method="get">
+        <fieldset>
+            <form action="${pageContext.request.contextPath}/createOrder" method="get">
 
-            <input type="hidden" name="id" value="${previewOrder.id}">
-            <input type="hidden" name="userId" value="${previewOrder.userId}">
-            <input type="hidden" name="userLogin" value="${previewOrder.userName}">
-            <input type="hidden" name="size" value="${previewOrder.suiteSizeId}">
-            <input type="hidden" name="category" value="${previewOrder.suiteCategoryId}">
-            <input type="hidden" name="checkIn" value="${previewOrder.checkIn}">
-            <input type="hidden" name="checkOut" value="${previewOrder.checkOut}">
-            <input type="hidden" name="price" value="${previewOrder.totalPrice}">
+                <input type="hidden" name="id" value="${previewOrder.id}">
+                <input type="hidden" name="userId" value="${previewOrder.userId}">
+                <input type="hidden" name="userLogin" value="${previewOrder.userName}">
+                <input type="hidden" name="size" value="${previewOrder.suiteSizeId}">
+                <input type="hidden" name="category" value="${previewOrder.suiteCategoryId}">
+                <input type="hidden" name="checkIn" value="${previewOrder.checkIn}">
+                <input type="hidden" name="checkOut" value="${previewOrder.checkOut}">
+                <input type="hidden" name="price" value="${previewOrder.totalPrice}">
 
-            <p><i>номер предзаказа: </i> ${previewOrder.id};
-                <i> имя клиента: </i> ${previewOrder.userName};<br>
-                <i>размер номера: </i> ${previewOrder.suiteSizeName};
-                <i> категория: </i> ${previewOrder.suiteCategoryName};<br>
-                <i>статус заказа: </i> ${previewOrder.orderStatusTitle};
-                <i> итоговая цена: </i> ${previewOrder.totalPrice};<br>
-                <i>Дата прибытия: </i> ${previewOrder.checkIn};
-                <i> Дата отъезда: </i> ${previewOrder.checkOut};
-                <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
-                <i>Комментарий: </i> ${previewOrder.comment}</p>
+                <p><i>номер предзаказа: </i> ${previewOrder.id};
+                    <i> имя клиента: </i> ${previewOrder.userName};<br>
+                    <i>размер номера: </i> ${previewOrder.suiteSizeName};
+                    <i> категория: </i> ${previewOrder.suiteCategoryName};<br>
+                    <i>статус заказа: </i> ${previewOrder.orderStatusTitle};
+                    <i> итоговая цена: </i> ${previewOrder.totalPrice};<br>
+                    <i>Дата прибытия: </i> ${previewOrder.checkIn};
+                    <i> Дата отъезда: </i> ${previewOrder.checkOut};
+                    <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
+                    <i>Комментарий: </i> ${previewOrder.comment}</p>
 
-            <button type="submit">подобрать номер</button>
+                <button type="submit">подобрать номер</button>
 
-        </form>
+            </form>
+        </fieldset>
     </c:if>
 
     <c:if test="${previewOrder.orderStatusId eq '2'}">
-        <form action="${pageContext.request.contextPath}/deleteOrder" method="post">
+        <fieldset>
+            <form action="${pageContext.request.contextPath}/deleteOrder" method="post">
 
-            <input type="hidden" name="id" value="${previewOrder.id}">
+                <input type="hidden" name="id" value="${previewOrder.id}">
 
+                <p><i>номер предзаказа: </i> ${previewOrder.id};
+                    <i> имя клиента: </i> ${previewOrder.userName};<br>
+                    <i>размер номера: </i> ${previewOrder.suiteSizeName};
+                    <i> категория: </i> ${previewOrder.suiteCategoryName};<br>
+                    <i>статус заказа: </i> ${previewOrder.orderStatusTitle};
+                    <i> итоговая цена: </i> ${previewOrder.totalPrice};<br>
+                    <i>Дата прибытия: </i> ${previewOrder.checkIn};
+                    <i> Дата отъезда: </i> ${previewOrder.checkOut};
+                    <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
+                    <i>Комментарий: </i> ${previewOrder.comment}</p>
+
+                <c:forEach var="statusOrder" items="${requestScope.statusOrderList}">
+                    <c:if test="${statusOrder.id eq '7'}">
+                        <input type="hidden" name="statusId" value="${statusOrder.id}">
+                    </c:if>
+                </c:forEach>
+
+                <button type="submit">удалить заказ</button>
+
+            </form>
+        </fieldset>
+    </c:if>
+
+    <c:if test="${previewOrder.orderStatusId eq '3'}">
+        <fieldset>
             <p><i>номер предзаказа: </i> ${previewOrder.id};
                 <i> имя клиента: </i> ${previewOrder.userName};<br>
                 <i>размер номера: </i> ${previewOrder.suiteSizeName};
@@ -68,66 +96,65 @@
                 <i> Дата отъезда: </i> ${previewOrder.checkOut};
                 <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
                 <i>Комментарий: </i> ${previewOrder.comment}</p>
-
-            <c:forEach var="statusOrder" items="${requestScope.statusOrderList}">
-                <c:if test="${statusOrder.id eq '6'}">
-                    <input type="hidden" name="statusId" value="${statusOrder.id}">${statusOrder.title}
-                </c:if>
-            </c:forEach>
-
-            <button type="submit">удалить заказ</button>
-
-        </form>
+        </fieldset>
     </c:if>
 
     <c:if test="${previewOrder.orderStatusId eq '4'}">
-        <form action="${pageContext.request.contextPath}/deleteOrder" method="post">
+        <fieldset>
+            <form action="${pageContext.request.contextPath}/deleteOrder" method="post">
 
-            <input type="hidden" name="id" value="${previewOrder.id}">
+                <input type="hidden" name="id" value="${previewOrder.id}">
 
-            <p><i>номер предзаказа: </i> ${previewOrder.id};
-                <i> имя клиента: </i> ${previewOrder.userName};<br>
-                <i>размер номера: </i> ${previewOrder.suiteSizeName};
-                <i> категория: </i> ${previewOrder.suiteCategoryName};<br>
-                <i>статус заказа: </i> ${previewOrder.orderStatusTitle};
-                <i> итоговая цена: </i> ${previewOrder.totalPrice};<br>
-                <i>Дата прибытия: </i> ${previewOrder.checkIn};
-                <i> Дата отъезда: </i> ${previewOrder.checkOut};
-                <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
-                <i>Комментарий: </i> ${previewOrder.comment}</p>
+                <p><i>номер предзаказа: </i> ${previewOrder.id};
+                    <i> имя клиента: </i> ${previewOrder.userName};<br>
+                    <i>размер номера: </i> ${previewOrder.suiteSizeName};
+                    <i> категория: </i> ${previewOrder.suiteCategoryName};<br>
+                    <i>статус заказа: </i> ${previewOrder.orderStatusTitle};
+                    <i> итоговая цена: </i> ${previewOrder.totalPrice};<br>
+                    <i>Дата прибытия: </i> ${previewOrder.checkIn};
+                    <i> Дата отъезда: </i> ${previewOrder.checkOut};
+                    <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
+                    <i>Комментарий: </i> ${previewOrder.comment}</p>
 
-            <c:forEach var="statusOrder" items="${requestScope.statusOrderList}">
-                <c:if test="${statusOrder.id eq '5'}">
-                    <input type="hidden" name="statusId" value="${statusOrder.id}">${statusOrder.title}
-                </c:if>
-            </c:forEach>
+                <c:forEach var="statusOrder" items="${requestScope.statusOrderList}">
+                    <c:if test="${statusOrder.id eq '5'}">
+                        <input type="hidden" name="statusId" value="${statusOrder.id}">${statusOrder.title}
+                    </c:if>
+                </c:forEach>
 
-            <button type="submit">удалить заказ</button>
+                <button type="submit">удалить заказ</button>
 
-        </form>
+            </form>
+        </fieldset>
     </c:if>
 
     <c:if test="${previewOrder.orderStatusId eq '7'}">
-        <form action="${pageContext.request.contextPath}/deleteOrderAndPreviewOrder" method="post">
+        <fieldset>
+            <form action="${pageContext.request.contextPath}/deleteOrderAndPreviewOrder" method="post">
 
-            <input type="hidden" name="id" value="${previewOrder.id}">
+                <input type="hidden" name="id" value="${previewOrder.id}">
 
-            <p><i>номер предзаказа: </i> ${previewOrder.id};
-                <i> имя клиента: </i> ${previewOrder.userName};<br>
-                <i>размер номера: </i> ${previewOrder.suiteSizeName};
-                <i> категория: </i> ${previewOrder.suiteCategoryName};<br>
-                <i>статус заказа: </i> ${previewOrder.orderStatusTitle};
-                <i> итоговая цена: </i> ${previewOrder.totalPrice};<br>
-                <i>Дата прибытия: </i> ${previewOrder.checkIn};
-                <i> Дата отъезда: </i> ${previewOrder.checkOut};
-                <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
-                <i>Комментарий: </i> ${previewOrder.comment}</p>
+                <p><i>номер предзаказа: </i> ${previewOrder.id};
+                    <i> имя клиента: </i> ${previewOrder.userName};<br>
+                    <i>размер номера: </i> ${previewOrder.suiteSizeName};
+                    <i> категория: </i> ${previewOrder.suiteCategoryName};<br>
+                    <i>статус заказа: </i> ${previewOrder.orderStatusTitle};
+                    <i> итоговая цена: </i> ${previewOrder.totalPrice};<br>
+                    <i>Дата прибытия: </i> ${previewOrder.checkIn};
+                    <i> Дата отъезда: </i> ${previewOrder.checkOut};
+                    <i> Дата бронирования: </i> ${previewOrder.bookingDate};<br>
+                    <i>Комментарий: </i> ${previewOrder.comment}</p>
 
-            <button type="submit">удалить заказ и предзаказ</button>
+                <button type="submit">удалить заказ и предзаказ</button>
 
-        </form>
+            </form>
+        </fieldset>
     </c:if>
 </c:forEach>
+
+<form action="${pageContext.request.contextPath}/checkPreviewOrder" method="get">
+    <button type="submit">новый поиск</button>
+</form>
 
 <form action="${pageContext.request.contextPath}/main" method="get">
     <button type="submit">вернуться на главную</button>

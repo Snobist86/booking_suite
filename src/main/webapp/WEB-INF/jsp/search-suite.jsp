@@ -35,36 +35,42 @@
     <%@include file="/WEB-INF/jsp/template/error-template.jsp" %>
 </form>
 
-<c:forEach var="vacantSuites" items="${requestScope.vacantSuites}">
-    <form action="${pageContext.request.contextPath}/addPreviewOrder" method="post">
-        <input type="hidden" name="inDate"
-               value="${not empty requestScope.defaultStartDate ? requestScope.defaultStartDate : param.startReservationDate}">
-        <input type="hidden" name="outDate"
-               value="${not empty requestScope.defaultEndDate ? requestScope.defaultEndDate : param.endReservationDate}">
-        <input type="hidden" name="suiteSizeId" value="${vacantSuites.suiteSizeId}">
-        <input type="hidden" name="suiteCategoryId" value="${vacantSuites.suiteCategoryId}">
-        <input type="hidden" name="price" value="${vacantSuites.price}">
-
-        <p>Размер номера: ${vacantSuites.suiteSize}</p>
-        <p>Категория номера: ${vacantSuites.suiteCategory}</p>
-        <p>Цена: ${vacantSuites.price}$</p>
-        <p>Комментарий:<input type="text" name="comment" placeholder="не более 256 символов"/></p>
-        <details>
-            <summary>Описание номера</summary>
-            <p>
-                    ${vacantSuites.commentSize}
-                    ${vacantSuites.commentCategory}
-            </p>
-        </details>
-        <p>
-            <button type="submit">Забронировать</button>
-        </p>
-        <br>
-    </form>
-</c:forEach>
+<form action="${pageContext.request.contextPath}/searchSuite" method="get">
+    <button type="submit">Новый поиск</button>
+</form>
 
 <form action="${pageContext.request.contextPath}/main" method="get">
     <button type="submit">вернуться на главную</button>
 </form>
+
+<c:forEach var="vacantSuites" items="${requestScope.vacantSuites}">
+    <fieldset>
+        <form action="${pageContext.request.contextPath}/addPreviewOrder" method="post">
+            <input type="hidden" name="inDate"
+                   value="${not empty requestScope.defaultStartDate ? requestScope.defaultStartDate : param.startReservationDate}">
+            <input type="hidden" name="outDate"
+                   value="${not empty requestScope.defaultEndDate ? requestScope.defaultEndDate : param.endReservationDate}">
+            <input type="hidden" name="suiteSizeId" value="${vacantSuites.suiteSizeId}">
+            <input type="hidden" name="suiteCategoryId" value="${vacantSuites.suiteCategoryId}">
+            <input type="hidden" name="price" value="${vacantSuites.price}">
+
+            <p>Размер номера: ${vacantSuites.suiteSize}</p>
+            <p>Категория номера: ${vacantSuites.suiteCategory}</p>
+            <p>Цена: ${vacantSuites.price}$</p>
+            <p>Комментарий:<input type="text" name="comment" placeholder="не более 256 символов"/></p>
+            <details>
+                <summary>Описание номера</summary>
+                <p>
+                        ${vacantSuites.commentSize}
+                        ${vacantSuites.commentCategory}
+                </p>
+            </details>
+            <p>
+                <button type="submit">Забронировать</button>
+            </p>
+            <br>
+        </form>
+    </fieldset>
+</c:forEach>
 </body>
 </html>

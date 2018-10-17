@@ -14,7 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter(servletNames = {"changeRole", "createSuiteSize", "createSuiteCategory", "createSuite", "create"})
+@WebFilter(servletNames = {"changeRole", "createSuiteSize", "createSuiteCategory", "createSuite", "createOrder", "create",
+        "checkPreviewOrder", "deleteOrderAndPreviewOrder", "deleteOrder"})
 public class AdminFilter implements Filter {
 
     @Override

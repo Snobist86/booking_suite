@@ -158,9 +158,10 @@ public final class PreviewOrderDao {
             statusStatement = connection.prepareStatement(CHANGE_STATUS_ORDER);
             connection.setAutoCommit(false);
 
-            statusStatement.setLong(1, Long.valueOf(dto.getStatusId()));
+            statusStatement.setInt(1, Integer.valueOf(dto.getStatusId()));
             statusStatement.setLong(2, Long.valueOf(dto.getPreviewOrderId()));
             statusStatement.executeUpdate();
+
             connection.commit();
         } catch (SQLException e) {
             if (connection != null) {

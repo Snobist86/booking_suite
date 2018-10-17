@@ -1,7 +1,6 @@
 package by.htp.Pankov.servlet.previewOrder;
 
 import by.htp.Pankov.dto.previewOrder.FindPreviewOrderDto;
-import by.htp.Pankov.dto.previewOrder.SearchPreviewOrderDto;
 import by.htp.Pankov.service.OrderStatusService;
 import by.htp.Pankov.service.PreviewOrderService;
 import by.htp.Pankov.util.JspPath;
@@ -16,9 +15,9 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet(value = "/checkPreviewOrder", name = "checkPreviewOrder")
-public class CheckPreviewServlet extends HttpServlet {
+public class CheckPreviewOrderServlet extends HttpServlet {
 
-    private static final Logger log = Logger.getLogger(CheckPreviewServlet.class);
+    private static final Logger log = Logger.getLogger(CheckPreviewOrderServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -31,13 +30,13 @@ public class CheckPreviewServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String previewOrderId = req.getParameter("id");
-
         List<FindPreviewOrderDto> previewOrders = PreviewOrderService.getInstance().search(previewOrderId);
 
+        req.setAttribute("statusOrderList", OrderStatusService.getInstance().findAll());
         req.setAttribute("previewOrders", previewOrders);
         log.info("search of the pre-order ");
 
-        resp.sendRedirect(req.getHeader("Referer"));
+        getServletContext().getRequestDispatcher(JspPath.get("administration-of-orders")).forward(req, resp);
     }
 
 }

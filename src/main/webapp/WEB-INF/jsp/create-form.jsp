@@ -4,18 +4,17 @@
     <title>CreateSomething</title>
 </head>
 <body>
-<h2>Что нового вы хотите внести в базу данных?</h2>
 
 <form action="${pageContext.request.contextPath}/createSuiteCategory" method="get">
-    <button type="submit">Категорию номера</button>
+    <button type="submit">Создать категорию номера</button>
 </form>
 
 <form action="${pageContext.request.contextPath}/createSuiteSize" method="get">
-    <button type="submit">Размер номера</button>
+    <button type="submit">Создать размер номера</button>
 </form>
 
 <form action="${pageContext.request.contextPath}/createSuite" method="get">
-    <button type="submit">Номер</button>
+    <button type="submit">Создать номер</button>
 </form>
 
 <form action="${pageContext.request.contextPath}/changeRole" method="get">

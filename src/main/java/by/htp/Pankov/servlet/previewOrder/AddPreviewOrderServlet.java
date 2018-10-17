@@ -21,7 +21,7 @@ public class AddPreviewOrderServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserDto currentUser = (UserDto) req.getSession().getAttribute("currentUser");
+        User currentUser = (User) req.getSession().getAttribute("currentUser");
         AddPreviewOrderDto addPreviewOrderDto = AddPreviewOrderDto.builder()
                 .userId(String.valueOf(currentUser.getId()))
                 .suiteSizeId(req.getParameter("suiteSizeId"))
